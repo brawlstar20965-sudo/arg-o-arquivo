@@ -1,0 +1,28 @@
+VERIFICAÇÃO INTERNA — 24 FASES
+
+01 | HELLO -> Caesar +3 | KHOOR
+02 | HELLO -> ASCII binary | 01001000 01000101 01001100 01001100 01001111
+03 | HELLO -> hexadecimal | 48454C4C4F
+04 | hexadecimal -> text | HELLO
+05 | HELLO -> Base64 | SEVMTE8=
+06 | HELLO -> reverse | OLLEH
+07 | reverse -> ROT13 | BYYRU
+08 | ROT13 text -> ASCII decimal | 66 89 89 82 85
+09 | ASCII decimal -> hexadecimal | 4259595255
+10 | hexadecimal -> text | BYYRU
+11 | text -> Atbash | YBBIF
+12 | Atbash text -> ASCII binary | 01011001 01000010 01000010 01001001 01000110
+13 | Atbash text -> hexadecimal | 5942424946
+14 | hexadecimal -> text | YBBIF
+15 | text -> reverse | FIBBY
+16 | reverse -> Caesar +3 | ILEEB
+17 | text -> ASCII binary | 01001001 01001100 01000101 01000101 01000010
+18 | text -> hexadecimal | 494C454542
+19 | hexadecimal -> text | ILEEB
+20 | text -> Atbash | ROVVY
+21 | Atbash -> ROT13 | EBIIL
+22 | text -> hexadecimal | 454249494C
+23 | hexadecimal -> text / QR | EBIIL
+24 | terminal token | END-73-19-08-42
+
+Todas as 23 transformações foram verificadas automaticamente; a 24ª é o token terminal.
