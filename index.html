@@ -1,0 +1,107 @@
+<!doctype html><html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIGNAL // ARCHIVE</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#7CFF00;font-family:Consolas,Monaco,monospace}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(124,255,0,.035) 0,rgba(124,255,0,.035) 1px,transparent 1px,transparent 4px);z-index:5}
+canvas{position:fixed;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1s ease}
+.wrap{position:relative;z-index:2;width:min(760px,92vw);height:100%;margin:auto;display:flex;align-items:center;justify-content:center}
+.panel{width:100%;border:1px solid rgba(124,255,0,.35);background:rgba(0,0,0,.78);box-shadow:0 0 35px rgba(124,255,0,.08),inset 0 0 35px rgba(124,255,0,.035);padding:34px}
+.glitch{font-size:12px;letter-spacing:4px;opacity:.75;margin-bottom:24px}
+h1{font-size:26px;letter-spacing:7px;font-weight:400;margin:0 0 28px}
+.status{font-size:11px;letter-spacing:3px;opacity:.6;margin-bottom:18px}
+input{width:100%;background:#020602;border:1px solid rgba(124,255,0,.5);color:#9cff3b;padding:16px;font:inherit;outline:none;text-align:center;letter-spacing:3px}
+input:focus{box-shadow:0 0 18px rgba(124,255,0,.12)}
+button{margin-top:12px;width:100%;padding:14px;background:#061006;color:#7CFF00;border:1px solid rgba(124,255,0,.5);font:inherit;letter-spacing:3px;cursor:pointer}
+button:hover{background:#0b180b}.error{height:18px;margin-top:12px;color:#ff3030;font-size:11px;letter-spacing:2px}
+#qr{display:none;text-align:center}#qr img{max-width:330px;width:75vw;background:#fff;padding:10px}
+#boot{position:fixed;inset:0;z-index:20;background:#fff;color:#202124;display:flex;align-items:center;justify-content:center;transition:background .8s ease,opacity .8s ease}
+#boot .googlebox{width:min(650px,88vw);text-align:center}
+#boot .googlelogo{font-family:Arial,sans-serif;font-size:58px;letter-spacing:-5px;margin-bottom:28px;color:#4285f4}
+#boot .googlelogo .r{color:#ea4335}#boot .googlelogo .y{color:#fbbc05}#boot .googlelogo .g{color:#34a853}
+#boot .search{height:58px;border:1px solid #dfe1e5;border-radius:30px;display:flex;align-items:center;padding:0 20px;box-shadow:0 2px 8px rgba(60,64,67,.18);background:#fff;transition:transform 1s cubic-bezier(.22,.8,.25,1),opacity .45s ease,box-shadow .3s}
+#boot .search:focus-within{box-shadow:0 3px 12px rgba(60,64,67,.25)}
+#boot .mag{font-family:Arial,sans-serif;color:#5f6368;font-size:23px;margin-right:13px}
+#boot input{border:0;background:transparent;color:#202124;text-align:left;letter-spacing:0;padding:0;font:16px Arial,sans-serif;box-shadow:none}
+#boot input:focus{box-shadow:none}
+#boot button{display:none}
+#boot .boot-error{height:22px;margin-top:14px;color:#d93025;font:13px Arial,sans-serif;letter-spacing:.3px;opacity:0}
+#boot.booting{background:#000}
+#boot.booting .search{transform:translateY(58vh) scale(.18);opacity:0;box-shadow:none}
+#boot.booting .googlelogo,#boot.booting .boot-error{opacity:0;transition:opacity .35s}
+#boot.hidden{display:none}
+</style></head><body><div id="boot">
+  <div class="googlebox">
+    <div class="googlelogo"><span>G</span><span class="r">o</span><span class="y">o</span><span>g</span><span class="r">l</span><span class="g">e</span></div>
+    <div class="search">
+      <div class="mag">⌕</div>
+      <input id="bootInput" autocomplete="off" spellcheck="false" autofocus placeholder="">
+    </div>
+    <div class="boot-error" id="bootError">ACCESS DENIED</div>
+  </div>
+</div>
+<canvas id="matrix"></canvas>
+<div class="wrap"><div class="panel"><div class="glitch">UNKNOWN SYSTEM // CONNECTION UNSTABLE</div><div id="screen"></div></div></div>
+<script>
+const answers=["KHOOR", "01001000 01000101 01001100 01001100 01001111", "48454C4C4F", "HELLO", "SEVMTE8=", "OLLEH", "BYYRU", "66 89 89 82 85", "4259595255", "BYYRU", "YBBIF", "01011001 01000010 01000010 01001001 01000110", "5942424946", "YBBIF", "FIBBY", "ILEEB", "01001001 01001100 01000101 01000101 01000010", "494C454542", "ILEEB", "ROVVY", "EBIIL", "454249494C", "EBIIL", "END-73-19-08-42"];
+const qrStage=22;
+let stage=0;
+function norm(v){return v.trim().replace(/\s+/g,' ').toUpperCase()}
+const START_CODE="INIT-73-19-08-42";
+const boot=document.getElementById('boot');
+const bootInput=document.getElementById('bootInput');
+const bootError=document.getElementById('bootError');
+let started=false;
+function startProject(){
+ if(started)return;
+ const v=norm(bootInput.value);
+ if(v!==norm(START_CODE)){
+   bootError.style.opacity='1';
+   bootInput.value='';
+   return;
+ }
+ started=true;
+ bootError.style.opacity='0';
+ boot.classList.add('booting');
+ document.querySelector('canvas').style.opacity='.28';
+ setTimeout(()=>{boot.classList.add('hidden');bootInput.blur();render();},1100);
+}
+bootInput.addEventListener('keydown',e=>{if(e.key==='Enter')startProject()});
+function render(){
+ const s=document.getElementById('screen');
+ if(stage===qrStage){
+  s.innerHTML='<div class="status">SIGNAL // 23</div><div id="qr"><img src="qrcode.png" alt="QR"></div><div class="status" style="margin-top:18px">ENTER ACCESS CODE</div><input id="ans" autocomplete="off" spellcheck="false" autofocus><button onclick="check()">TRANSMIT</button><div class="error" id="err"></div>';
+  document.getElementById('qr').style.display='block'; return;
+ }
+ if(stage>=answers.length){s.innerHTML='<div class="status">SIGNAL TERMINATED</div><h1>END</h1><div class="status">ARCHIVE CLOSED</div>';return;}
+ s.innerHTML='<div class="status">SIGNAL // '+String(stage+1).padStart(2,'0')+'</div><h1>ACCESS</h1><input id="ans" autocomplete="off" spellcheck="false" autofocus><button onclick="check()">TRANSMIT</button><div class="error" id="err"></div>';
+}
+function successScreen(){
+ const s=document.getElementById('screen');
+ const completed=stage+1;
+ s.innerHTML='<div class="status">SIGNAL // '+String(completed).padStart(2,'0')+'</div>'
+   +'<h1>ACCESS GRANTED</h1>'
+   +'<div class="status" style="font-size:13px;line-height:1.9;opacity:.9">CONGRATULATIONS.<br>YOU COMPLETED THIS SIGNAL.</div>'
+   +'<button onclick="continueStage()">CONTINUE</button>';
+}
+function continueStage(){
+ stage++;
+ render();
+}
+function check(){
+ const v=norm(document.getElementById('ans').value);
+ if(v===norm(answers[stage])){successScreen()}
+ else{document.getElementById('err').textContent='INVALID SIGNAL';document.getElementById('ans').value=''}
+}
+document.addEventListener('keydown',e=>{
+ if(e.key==='Enter'){
+   const ans=document.getElementById('ans');
+   if(ans) check();
+ }
+});
+const c=document.getElementById('matrix'),x=c.getContext('2d');
+function resize(){c.width=innerWidth;c.height=innerHeight}resize();addEventListener('resize',resize);
+let fs=16,cols=Math.floor(innerWidth/fs),drops=Array(cols).fill(1);
+function rain(){x.fillStyle='rgba(0,0,0,.075)';x.fillRect(0,0,c.width,c.height);x.font=fs+'px monospace';for(let i=0;i<drops.length;i++){x.fillStyle='rgba(124,255,0,.75)';x.fillText(Math.random()>.5?'1':'0',i*fs,drops[i]*fs);if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;drops[i]++}}
+setInterval(rain,42);
+</script></body></html>
